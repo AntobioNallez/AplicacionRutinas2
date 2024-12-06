@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AplicacionRutinas</string>
+    <string name="title_activity_splash_layout">SplashLayout</string>
+</resources>
