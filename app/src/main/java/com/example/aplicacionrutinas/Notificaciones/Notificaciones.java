@@ -50,7 +50,7 @@ public class Notificaciones {
     }
 
     /**
-     * Metodo que crea la notificacion
+     * Metodo que crea el canal de notificaciones
      *
      * @param context
      * @return Canal de notificaciones
