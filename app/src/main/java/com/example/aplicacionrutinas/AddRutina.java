@@ -1,7 +1,6 @@
 package com.example.aplicacionrutinas;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -63,6 +62,7 @@ public class AddRutina extends BottomSheetDialogFragment {
             isUpdate = true;
             String rutina = bundle.getString("rutina");
             nuevaRutinaText.setText(rutina);
+            assert rutina != null;
             if (!rutina.isEmpty()) {
                 nuevaRutinaText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
             }

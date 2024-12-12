@@ -1,34 +1,30 @@
 package com.example.aplicacionrutinas;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aplicacionrutinas.Adaptador.RutinaAdaptador;
 import com.example.aplicacionrutinas.BaseDeDatos.BaseDeDatosHandler;
 import com.example.aplicacionrutinas.Modelo.Rutina;
+import com.example.aplicacionrutinas.Notificaciones.Notificaciones;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements DialogCloseListener {
 
     private RecyclerView recyclerView;
     private RutinaAdaptador rutinaAdaptador;
-    private FloatingActionButton fab;
+    private FloatingActionButton fab, fab2;
 
     private List<Rutina> rutinas;
     private BaseDeDatosHandler db;
@@ -48,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
         recyclerView.setAdapter(rutinaAdaptador);
 
         fab = findViewById(R.id.fab);
+        fab2 = findViewById(R.id.fab2);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecyclerTouchHelper(rutinaAdaptador));
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -56,13 +53,26 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
         rutinaAdaptador.setRutinas(rutinas);
 
         fab.setOnClickListener(view -> AddRutina.newInstance().show(getSupportFragmentManager(), AddRutina.TAG));
+        fab2.setOnClickListener(view -> Notificaciones.lanzarNotificacion(this));
 
+        solicitarPermisosNotificaciones();
     }
 
     @Override
     public void handleDialogClose(DialogInterface dialog) {
         rutinas = db.obtenerRutinas();
         rutinaAdaptador.setRutinas(rutinas);
+    }
+
+    /**
+     * Solicita el permiso de notificaciones
+     */
+    private void solicitarPermisosNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
     }
 
 }
