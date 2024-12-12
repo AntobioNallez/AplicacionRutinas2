@@ -9,8 +9,7 @@ import java.util.Calendar;
 
 public class GestorAlarma {
 
-    public static void programarAlarma(Context context) {
-        Calendar calendar = Calendar.getInstance();
+    public static void programarAlarma(Context context, Calendar calendar) {
         long tiempo = calendar.getTimeInMillis() + 10000;
 
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

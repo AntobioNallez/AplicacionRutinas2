@@ -20,8 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rutinaTexto"
-        android:nestedScrollingEnabled="true"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+        android:nestedScrollingEnabled="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
