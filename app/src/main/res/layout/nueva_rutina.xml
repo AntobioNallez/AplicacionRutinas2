@@ -1,24 +1,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="16dp">
 
     <EditText
         android:id="@+id/nuevoTextoRutina"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:hint="Escribe una nueva rutina" />
-    
+        android:hint="@string/nueva_rutina"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+    <Spinner
+        android:id="@+id/diaSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nuevoTextoRutina"
+        android:layout_marginTop="8dp"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/horaEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/diaSpinner"
+        android:layout_marginTop="8dp"
+        android:background="@null"
+        android:focusable="true"
+        android:hint="@string/pistaHora"
+        android:inputType="time"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
     <Button
         android:id="@+id/botonNuevaRutina"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/nuevoTextoRutina"
+        android:layout_below="@+id/horaEditText"
         android:layout_alignParentEnd="true"
-        android:textSize="16sp"
-        android:text="Guardar"
-        android:textAllCaps="false"
         android:background="@android:color/transparent"
-        android:textColor="@android:color/darker_gray"/>
+        android:text="@string/guardar"
+        android:textAllCaps="false"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16sp" />
 </RelativeLayout>

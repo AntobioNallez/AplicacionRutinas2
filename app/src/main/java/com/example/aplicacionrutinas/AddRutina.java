@@ -1,7 +1,6 @@
 package com.example.aplicacionrutinas;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +23,19 @@ import com.example.aplicacionrutinas.BaseDeDatos.BaseDeDatosHandler;
 import com.example.aplicacionrutinas.Modelo.Rutina;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Objects;
+
 public class AddRutina extends BottomSheetDialogFragment {
 
     public static final String TAG = "AddRutina";
+    private final String[] dias = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
 
-    private EditText nuevaRutinaText;
+    private EditText nuevaRutinaText, horaEditText;
     private Button botonNuevaRutina;
     private BaseDeDatosHandler db;
+    private Spinner diaSpinner;
 
     public static AddRutina newInstance() {
         return new AddRutina();
@@ -53,6 +60,11 @@ public class AddRutina extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         nuevaRutinaText = getView().findViewById(R.id.nuevoTextoRutina);
         botonNuevaRutina = getView().findViewById(R.id.botonNuevaRutina);
+        diaSpinner = getView().findViewById(R.id.diaSpinner);
+        horaEditText = getView().findViewById(R.id.horaEditText);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dias); //Crea el adapter con los dias de la semana
+        diaSpinner.setAdapter(adapter); //Añade los dias de la semana al spinner
 
         db = new BaseDeDatosHandler(getActivity());
         db.abrirBaseDeDatos();
@@ -63,9 +75,9 @@ public class AddRutina extends BottomSheetDialogFragment {
             isUpdate = true;
             String rutina = bundle.getString("rutina");
             nuevaRutinaText.setText(rutina);
-            if (!rutina.isEmpty()) {
-                nuevaRutinaText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
-            }
+            assert rutina != null;
+            if (!rutina.isEmpty())
+                nuevaRutinaText.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark));
         } else {
             isUpdate = false;
         }
@@ -82,7 +94,7 @@ public class AddRutina extends BottomSheetDialogFragment {
                     nuevaRutinaText.setTextColor(Color.GRAY);
                 } else {
                     nuevaRutinaText.setEnabled(true);
-                    nuevaRutinaText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+                    nuevaRutinaText.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark));
                 }
             }
 
@@ -93,12 +105,17 @@ public class AddRutina extends BottomSheetDialogFragment {
 
         botonNuevaRutina.setOnClickListener(view1 -> {
             String rutina = nuevaRutinaText.getText().toString();
+            String dia = diaSpinner.getSelectedItem().toString();
+            String hora = calendarioMiliSegundos(horaEditText.getText().toString());
+
             if (isUpdate) {
-                db.actualizarRutina(bundle.getInt("id"), rutina, bundle.getString("hora"), bundle.getString("dia"));
+                db.actualizarRutina(bundle.getInt("id"), rutina, hora, dia);
             } else {
                 Rutina rutina1 = new Rutina();
-                rutina1.setRutina(rutina);
                 rutina1.setStatus(0);
+                rutina1.setRutina(rutina);
+                rutina1.setHora(hora);
+                rutina1.setDia(dia);
                 db.insertarRutina(rutina1);
             }
             dismiss();
@@ -107,6 +124,7 @@ public class AddRutina extends BottomSheetDialogFragment {
 
     /**
      * Metodo que se encarga de cerrar el dialogo.
+     *
      * @param dialog
      */
     @Override
@@ -115,5 +133,30 @@ public class AddRutina extends BottomSheetDialogFragment {
         if (activity instanceof DialogCloseListener) {
             ((DialogCloseListener) activity).handleDialogClose(dialog);
         }
+    }
+
+    public String calendarioMiliSegundos(String hora) {
+        String[] horaSeparacion = hora.split(":");
+        int horaInt = Integer.parseInt(horaSeparacion[0]);
+        int minutosInt = Integer.parseInt(horaSeparacion[1]);
+
+        if (horaInt >= 0 && horaInt <= 23 && minutosInt >= 0 && minutosInt <= 59) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, horaInt);
+            calendar.set(Calendar.MINUTE, minutosInt);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            long horaLong = calendar.getTimeInMillis();
+
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+
+            hora = String.valueOf(horaLong - calendar.getTimeInMillis());
+        } else {
+            hora = "28800000";
+        }
+
+        return hora;
     }
 }
