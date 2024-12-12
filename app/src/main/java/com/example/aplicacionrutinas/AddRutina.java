@@ -94,7 +94,7 @@ public class AddRutina extends BottomSheetDialogFragment {
         botonNuevaRutina.setOnClickListener(view1 -> {
             String rutina = nuevaRutinaText.getText().toString();
             if (isUpdate) {
-                db.actualizarRutina(bundle.getInt("id"), rutina);
+                db.actualizarRutina(bundle.getInt("id"), rutina, bundle.getString("hora"), bundle.getString("dia"));
             } else {
                 Rutina rutina1 = new Rutina();
                 rutina1.setRutina(rutina);

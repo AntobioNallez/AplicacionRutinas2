@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
         rutinas = new ArrayList<>();
 
         recyclerView = findViewById(R.id.rutinaRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         rutinaAdaptador = new RutinaAdaptador(db,this);
         recyclerView.setAdapter(rutinaAdaptador);
 

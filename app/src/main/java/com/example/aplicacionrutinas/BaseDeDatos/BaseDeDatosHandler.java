@@ -20,8 +20,10 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     private static final String RUTINA_ID = "id";
     private static final String RUTINA_NOMBRE = "nombre";
     private static final String RUTINA_STATUS = "status";
+    private static final String RUTINA_HORA = "hora";
+    private static final String RUTINA_DIA = "dia";
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE " + RUTINAS_TABLE + "(" + RUTINA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + RUTINA_NOMBRE + " TEXT, " + RUTINA_STATUS + " INTEGER)";
+            + RUTINA_NOMBRE + " TEXT, " + RUTINA_STATUS + " INTEGER, " + RUTINA_HORA + " TEXT, " + RUTINA_DIA + " TEXT)";
 
     private SQLiteDatabase db;
 
@@ -48,6 +50,8 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(RUTINA_NOMBRE, rutina.getRutina());
         values.put(RUTINA_STATUS, rutina.getStatus());
+        values.put(RUTINA_HORA, rutina.getHora());
+        values.put(RUTINA_DIA, rutina.getDia());
         db.insert(RUTINAS_TABLE, null, values);
     }
 
@@ -84,9 +88,11 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
-    public void actualizarRutina(int id, String rutina) {
+    public void actualizarRutina(int id, String rutina, String hora, String dia) {
         ContentValues values = new ContentValues();
         values.put(RUTINA_NOMBRE, rutina);
+        values.put(RUTINA_HORA, hora);
+        values.put(RUTINA_DIA, dia);
         db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
     }
 

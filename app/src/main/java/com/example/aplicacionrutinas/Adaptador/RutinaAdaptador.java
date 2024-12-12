@@ -63,7 +63,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
     }
 
     /**
-     * Método que se encarga de actualizar la lista de rutinas.
+     * Metodo que se encarga de actualizar la lista de rutinas.
      * @param rutinaList Lista donde se almacenan las rutinas
      */
     public void setRutinas(List<Rutina> rutinaList) {
