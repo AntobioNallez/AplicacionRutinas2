@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AplicacionRutinas</string>
+    <string name="app_name">Aplicacion Rutinas</string>
     <string name="title_activity_splash_layout">SplashLayout</string>
     <string name="guardar">Guardar</string>
     <string name="nueva_rutina">Nueva rutina</string>

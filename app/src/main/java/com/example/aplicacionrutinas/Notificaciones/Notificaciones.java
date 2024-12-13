@@ -15,24 +15,26 @@ import com.example.aplicacionrutinas.SplashLayout;
 
 public class Notificaciones {
 
-    private static final String NOMBRE_CANAL = "nombreCanal1";
+    private static final String NOMBRE_CANAL = "Recordatorio Rutina";
     private static final String ID_CANAL = "idCanal1";
 
     /**
      * Lanza una nueva notificacion
+     *
      * @param context
      */
     public static void lanzarNotificacion(Context context) {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.deleteNotificationChannel(NOMBRE_CANAL); //Esta linea esta para borrar el canal duplicado ya que antes estaba el id y nombre cambiados
             NotificationChannel nc = crearCanalNotificaciones(context);
             nc.setDescription("Descripción del canal");
             nc.enableVibration(true);
             manager.createNotificationChannel(nc);
         }
 
-        NotificationCompat.Builder nb = new NotificationCompat.Builder(context, "idCanal1")
+        NotificationCompat.Builder nb = new NotificationCompat.Builder(context, ID_CANAL)
                 .setSmallIcon(R.drawable.thumbs)
                 .setContentTitle("Título de prueba")
                 .setContentText("Contenido de prueba")
@@ -48,7 +50,8 @@ public class Notificaciones {
     }
 
     /**
-     * Metodo que crea la notificacion
+     * Metodo que crea el canal de notificaciones
+     *
      * @param context
      * @return Canal de notificaciones
      */
@@ -56,7 +59,7 @@ public class Notificaciones {
         NotificationChannel notificationChannel = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel = new NotificationChannel(Notificaciones.NOMBRE_CANAL, Notificaciones.ID_CANAL, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel = new NotificationChannel(Notificaciones.ID_CANAL, Notificaciones.NOMBRE_CANAL, NotificationManager.IMPORTANCE_DEFAULT);
             notificationChannel.enableLights(true);
             notificationChannel.enableVibration(true);
             notificationChannel.setLightColor(context.getApplicationContext().getResources().getColor(R.color.colorPrimaryDark));

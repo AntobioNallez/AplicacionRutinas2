@@ -39,6 +39,12 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_QUERY); // Usa el objeto pasado como argumento
     }
 
+    /**
+     * Actualiza la base de datos y la version de esta
+     * @param sqLiteDatabase Objeto que contiene la base de datos
+     * @param oldVersion Version antigua de la base de datos
+     * @param newVersion Nueva version de la base de datos
+     */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RUTINAS_TABLE);
@@ -53,7 +59,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Inserta una nueva rutina
+     * Inserta una nueva rutina en la base de datos
      *
      * @param rutina Rutina nueva a ingresar
      */
@@ -122,6 +128,10 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Elimina una rutina dado un id
+     * @param id Id de la rutina a eliminar
+     */
     public void eliminarRutina(int id) {
         db.delete(RUTINAS_TABLE, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
     }
