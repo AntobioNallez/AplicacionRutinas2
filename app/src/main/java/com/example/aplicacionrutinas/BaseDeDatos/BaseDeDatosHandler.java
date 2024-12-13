@@ -6,13 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
-import com.example.aplicacionrutinas.AddRutina;
 import com.example.aplicacionrutinas.Modelo.Rutina;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class BaseDeDatosHandler extends SQLiteOpenHelper {
@@ -70,6 +67,29 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         values.put(RUTINA_HORA, rutina.getHora());
         values.put(RUTINA_DIA, rutina.getDia());
         db.insert(RUTINAS_TABLE, null, values);
+    }
+
+    /**
+     * Devuelve una rutina dado un id
+     * @param id Id de la rutina
+     * @return Objeto rutina con los datos de esta
+     */
+    @SuppressLint("Range")
+    public Rutina obtenerRutina(int id) {
+        Rutina rutina = null;
+        String query = "SELECT * FROM rutina WHERE id = ?";
+        try (Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                // Crear el objeto Rutina desde los datos obtenidos
+                rutina = new Rutina();
+                rutina.setId(cursor.getInt(cursor.getColumnIndex(RUTINA_ID)));
+                rutina.setRutina(cursor.getString(cursor.getColumnIndex(RUTINA_NOMBRE)));
+                rutina.setStatus(cursor.getInt(cursor.getColumnIndex(RUTINA_STATUS)));
+                rutina.setHora(cursor.getString(cursor.getColumnIndex(RUTINA_HORA)));
+                rutina.setDia(cursor.getString(cursor.getColumnIndex(RUTINA_DIA)));
+            }
+        }
+        return rutina;
     }
 
     /**

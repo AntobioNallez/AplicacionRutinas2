@@ -13,6 +13,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aplicacionrutinas.Adaptador.RutinaAdaptador;
+import com.example.aplicacionrutinas.Modelo.Rutina;
+import com.example.aplicacionrutinas.Notificaciones.GestorAlarma;
+
+import java.util.List;
 
 /**
  * Clase que se encarga de manejar el deslizamiento de las rutinas en el RecyclerView. Y su funcionalidad.
@@ -44,7 +48,11 @@ public class RecyclerTouchHelper extends ItemTouchHelper.SimpleCallback {
             AlertDialog.Builder builder = new AlertDialog.Builder(rutinaAdaptador.getContext());
             builder.setTitle("Eliminar Rutina");
             builder.setMessage("¿Estás seguro de que quieres eliminar esta rutina?");
-            builder.setPositiveButton("Sí", (dialogInterface, i) -> rutinaAdaptador.borrarRutina(posicion));
+            builder.setPositiveButton("Sí", (dialogInterface, i) -> {
+                List<Rutina> rutinas = rutinaAdaptador.getRutinas();
+                GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), Long.parseLong(rutinas.get(posicion).getHora()));
+                rutinaAdaptador.borrarRutina(posicion);
+            });
             builder.setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> rutinaAdaptador.notifyItemChanged(posicion));
             AlertDialog dialog = builder.create();
             dialog.show();

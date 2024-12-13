@@ -11,19 +11,11 @@
         android:hint="@string/nueva_rutina"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-    <Spinner
-        android:id="@+id/diaSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nuevoTextoRutina"
-        android:layout_marginTop="8dp"
-        android:padding="8dp" />
-
     <EditText
         android:id="@+id/horaEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/diaSpinner"
+        android:layout_below="@+id/nuevoTextoRutina"
         android:layout_marginTop="8dp"
         android:background="@null"
         android:focusable="true"

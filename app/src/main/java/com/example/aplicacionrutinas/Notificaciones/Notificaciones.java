@@ -23,7 +23,7 @@ public class Notificaciones {
      *
      * @param context
      */
-    public static void lanzarNotificacion(Context context) {
+    public static void lanzarNotificacion(Context context, String titulo, String texto) {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -36,8 +36,8 @@ public class Notificaciones {
 
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context, ID_CANAL)
                 .setSmallIcon(R.drawable.thumbs)
-                .setContentTitle("Título de prueba")
-                .setContentText("Contenido de prueba")
+                .setContentTitle(titulo)
+                .setContentText(texto)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 

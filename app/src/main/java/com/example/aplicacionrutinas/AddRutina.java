@@ -10,10 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,21 +20,16 @@ import androidx.core.content.ContextCompat;
 
 import com.example.aplicacionrutinas.BaseDeDatos.BaseDeDatosHandler;
 import com.example.aplicacionrutinas.Modelo.Rutina;
+import com.example.aplicacionrutinas.Notificaciones.GestorAlarma;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Objects;
 
 public class AddRutina extends BottomSheetDialogFragment {
 
     public static final String TAG = "AddRutina";
-    private final String[] dias = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
 
     private EditText nuevaRutinaText, horaEditText;
     private Button botonNuevaRutina;
     private BaseDeDatosHandler db;
-    private Spinner diaSpinner;
 
     public static AddRutina newInstance() {
         return new AddRutina();
@@ -60,11 +54,7 @@ public class AddRutina extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         nuevaRutinaText = getView().findViewById(R.id.nuevoTextoRutina);
         botonNuevaRutina = getView().findViewById(R.id.botonNuevaRutina);
-        diaSpinner = getView().findViewById(R.id.diaSpinner);
         horaEditText = getView().findViewById(R.id.horaEditText);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dias); //Crea el adapter con los dias de la semana
-        diaSpinner.setAdapter(adapter); //Añade los dias de la semana al spinner
 
         db = new BaseDeDatosHandler(getActivity());
         db.abrirBaseDeDatos();
@@ -105,19 +95,28 @@ public class AddRutina extends BottomSheetDialogFragment {
 
         botonNuevaRutina.setOnClickListener(view1 -> {
             String rutina = nuevaRutinaText.getText().toString();
-            String dia = diaSpinner.getSelectedItem().toString();
-            String hora = calendarioMiliSegundos(horaEditText.getText().toString());
+            String[] tiempo = horaEditText.getText().toString().split(":");
+            long hora = Long.parseLong(tiempo[0]) * 3600000 + Long.parseLong(tiempo[1]) * 60000;
+
+            if (rutina.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (isUpdate) {
-                db.actualizarRutina(bundle.getInt("id"), rutina, hora, dia);
+                int idRutina = bundle.getInt("id");
+                Rutina rutinaAntigua = db.obtenerRutina(idRutina);
+                GestorAlarma.cancelarAlarma(requireContext(), Long.parseLong(rutinaAntigua.getHora()));
+                db.actualizarRutina(idRutina, rutina, String.valueOf(hora), "Lunes");
             } else {
                 Rutina rutina1 = new Rutina();
                 rutina1.setStatus(0);
                 rutina1.setRutina(rutina);
-                rutina1.setHora(hora);
-                rutina1.setDia(dia);
+                rutina1.setHora(String.valueOf(hora));
                 db.insertarRutina(rutina1);
             }
+
+            GestorAlarma.programarAlarmaDiaria(requireContext(), hora);
             dismiss();
         });
     }
@@ -133,30 +132,5 @@ public class AddRutina extends BottomSheetDialogFragment {
         if (activity instanceof DialogCloseListener) {
             ((DialogCloseListener) activity).handleDialogClose(dialog);
         }
-    }
-
-    public String calendarioMiliSegundos(String hora) {
-        String[] horaSeparacion = hora.split(":");
-        int horaInt = Integer.parseInt(horaSeparacion[0]);
-        int minutosInt = Integer.parseInt(horaSeparacion[1]);
-
-        if (horaInt >= 0 && horaInt <= 23 && minutosInt >= 0 && minutosInt <= 59) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, horaInt);
-            calendar.set(Calendar.MINUTE, minutosInt);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            long horaLong = calendar.getTimeInMillis();
-
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-
-            hora = String.valueOf(horaLong - calendar.getTimeInMillis());
-        } else {
-            hora = "28800000";
-        }
-
-        return hora;
     }
 }

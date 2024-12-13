@@ -104,4 +104,8 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
             rutina = view.findViewById(R.id.rutinaCheckBox);
         }
     }
+
+    public List<Rutina> getRutinas() {
+        return rutinas;
+    }
 }
