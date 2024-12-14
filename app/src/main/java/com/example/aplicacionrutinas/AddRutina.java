@@ -114,7 +114,6 @@ public class AddRutina extends BottomSheetDialogFragment {
                     Toast.makeText(requireContext(), "Por favor introduce una hora válida.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                stringHora = stringHora.substring(0, 2) + ":" + stringHora.substring(2, 4);
             }
 
             String[] tiempo = stringHora.split(":");
@@ -123,13 +122,13 @@ public class AddRutina extends BottomSheetDialogFragment {
             if (isUpdate) { //Comprueba si es la actualizacion de una rutina ya existente o si es nueva
                 int idRutina = bundle.getInt("id");
                 Rutina rutinaAntigua = db.obtenerRutina(idRutina);
-                GestorAlarma.cancelarAlarma(requireContext(), Long.parseLong(rutinaAntigua.getHora()));
+                GestorAlarma.cancelarAlarma(requireContext(), rutinaAntigua.getHora());
                 db.actualizarRutina(idRutina, rutina, String.valueOf(hora), "Lunes");
             } else {
                 Rutina rutina1 = new Rutina();
                 rutina1.setStatus(1);
                 rutina1.setRutina(rutina);
-                rutina1.setHora(String.valueOf(hora));
+                rutina1.setHora(hora);
                 db.insertarRutina(rutina1);
             }
 

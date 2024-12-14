@@ -56,8 +56,8 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
      * @param hora Hora de la rutina
      * @return Hora calculada
      */
-    private String calculoHora(String hora) {
-        long minutos = Long.parseLong(hora) / 60000;
+    private String calculoHora(long hora) {
+        long minutos = hora / 60000;
         long horas = minutos / 60;
         minutos = minutos % 60;
         if (minutos == 0) {

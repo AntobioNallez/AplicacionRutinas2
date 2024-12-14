@@ -60,7 +60,7 @@ public class RecyclerTouchHelper extends ItemTouchHelper.SimpleCallback {
         builder.setMessage("¿Estás seguro de que quieres eliminar esta rutina?");
         builder.setPositiveButton("Sí", (dialogInterface, i) -> {
             List<Rutina> rutinas = rutinaAdaptador.getRutinas();
-            GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), Long.parseLong(rutinas.get(posicion).getHora()));
+            GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), rutinas.get(posicion).getHora());
             rutinaAdaptador.borrarRutina(posicion);
         });
         builder.setNegativeButton(R.string.cancelOption, (dialogInterface, i) -> rutinaAdaptador.notifyItemChanged(posicion));

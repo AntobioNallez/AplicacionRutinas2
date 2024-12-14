@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BaseDeDatosHandler extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "rutinas.db"; // Nombre correcto de la base de datos
+    private static final String DATABASE_NAME = "rutinas.db";
     private static final int DATABASE_VERSION = 1;
     private static final String RUTINAS_TABLE = "rutina";
     private static final String RUTINA_ID = "id";
@@ -23,17 +23,24 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     private static final String RUTINA_HORA = "hora";
     private static final String RUTINA_DIA = "dia";
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE " + RUTINAS_TABLE + "(" + RUTINA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + RUTINA_NOMBRE + " TEXT, " + RUTINA_STATUS + " INTEGER, " + RUTINA_HORA + " TEXT, " + RUTINA_DIA + " TEXT)";
+            + RUTINA_NOMBRE + " TEXT, " + RUTINA_STATUS + " INTEGER, " + RUTINA_HORA + " INTEGER, " + RUTINA_DIA + " TEXT)";
 
     private SQLiteDatabase db;
+    private final long[][] rangosHoras = {
+            {0, 86340000}, // 0:00 a 23:59
+            {0, 21540000}, // 0:00 a 5:59
+            {21600000, 43140000}, // 6:00 a 11:59
+            {43200000, 64740000}, // 12:00 a 17:59
+            {64800000, 86340000}  // 18:00 a 23:59
+    };
 
     public BaseDeDatosHandler(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION); // Nombre correcto de la base de datos
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(CREATE_TABLE_QUERY); // Usa el objeto pasado como argumento
+        sqLiteDatabase.execSQL(CREATE_TABLE_QUERY);
     }
 
     /**
@@ -46,14 +53,14 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RUTINAS_TABLE);
-        onCreate(sqLiteDatabase); // Usa el objeto pasado como argumento
+        onCreate(sqLiteDatabase);
     }
 
     /**
      * Inicializa la base de datos para poder escribir
      */
     public void abrirBaseDeDatos() {
-        db = this.getWritableDatabase(); // Inicializa la base de datos
+        db = this.getWritableDatabase();
     }
 
     /**
@@ -89,9 +96,12 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      * @return List que contiene las rutinas encontradas
      */
     @SuppressLint("Range")
-    public List<Rutina> buscarRutinas(String texto) {
-        String query = "SELECT * FROM rutina WHERE nombre LIKE ?";
-        return obtenerRutinaConQuery(query, new String[]{texto + "%"});
+    public List<Rutina> buscarRutinas(String texto, int rangoHora) {
+        String query = "SELECT * FROM rutina WHERE nombre LIKE ? AND hora >= ? AND hora <= ?";
+        long inicio = rangosHoras[rangoHora][0];
+        long fin = rangosHoras[rangoHora][1];
+
+        return obtenerRutinaConQuery(query, new String[]{texto + "%", String.valueOf(inicio), String.valueOf(fin)});
     }
 
     /**
@@ -127,7 +137,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     public void actualizarRutina(int id, String rutina, String hora, String dia) {
         ContentValues values = new ContentValues();
         values.put(RUTINA_NOMBRE, rutina);
-        values.put(RUTINA_HORA, hora);
+        values.put(RUTINA_HORA, Rutina.convertirHoraAMilisegundos(hora)); // Convertir hora
         values.put(RUTINA_DIA, dia);
         actualizarRutinaPorId(id, values);
     }
@@ -150,6 +160,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      */
     private List<Rutina> obtenerRutinaConQuery(String query, String[] argumentos) {
         List<Rutina> rutinas = new ArrayList<>();
+        query += " ORDER BY hora ASC"; //Ordenar por hora ascendente
         try (Cursor cursor = db.rawQuery(query, argumentos)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -173,7 +184,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         rutina.setId(cursor.getInt(cursor.getColumnIndex(RUTINA_ID)));
         rutina.setRutina(cursor.getString(cursor.getColumnIndex(RUTINA_NOMBRE)));
         rutina.setStatus(cursor.getInt(cursor.getColumnIndex(RUTINA_STATUS)));
-        rutina.setHora(cursor.getString(cursor.getColumnIndex(RUTINA_HORA)));
+        rutina.setHora(cursor.getLong(cursor.getColumnIndex(RUTINA_HORA)));
         rutina.setDia(cursor.getString(cursor.getColumnIndex(RUTINA_DIA)));
         return rutina;
     }

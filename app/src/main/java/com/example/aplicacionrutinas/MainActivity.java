@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
     private Toolbar toolbar;
     private List<Rutina> rutinas;
     private BaseDeDatosHandler db;
+    private int opcionFiltrado = 0;
+    private String busquedaActual = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,16 +101,47 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                busquedaActual = newText;
                 cargarRutinas(newText);
                 return true;
             }
         });
 
+        MenuItem filtrarItem = menu.findItem(R.id.filtrar);
+        filtrarItem.setOnMenuItemClickListener(item -> {
+            showPopUp(findViewById(R.id.filtrar));
+            return true;
+        });
+
         return true;
     }
 
+    private void showPopUp(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.menu_filter, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+           if (item.getItemId() == R.id.option1) {
+               opcionFiltrado = 0;
+           } else if (item.getItemId() == R.id.option2) {
+               opcionFiltrado = 1;
+           } else if (item.getItemId() == R.id.option3) {
+               opcionFiltrado = 2;
+           } else if (item.getItemId() == R.id.option4) {
+               opcionFiltrado = 3;
+           } else if (item.getItemId() == R.id.option5) {
+               opcionFiltrado = 4;
+           }
+           cargarRutinas(busquedaActual);
+           return true;
+        });
+
+        popupMenu.show();
+    }
+
     private void cargarRutinas(String query) {
-        List<Rutina> rutinasQuery = db.buscarRutinas(query);
+        List<Rutina> rutinasQuery = db.buscarRutinas(query, opcionFiltrado);
         rutinaAdaptador.setRutinas(rutinasQuery);
     }
 

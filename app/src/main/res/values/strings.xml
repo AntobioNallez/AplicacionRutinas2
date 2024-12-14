@@ -8,4 +8,9 @@
     <string name="busquedaBarra">Buscar</string>
     <string name="filtrar">Filtrar por hora</string>
     <string name="cancelOption">Cancelar</string>
+    <string name="opcion1">Todas las horas</string>
+    <string name="opcion2">De 0 a 5</string>
+    <string name="opcion3">De 6 a 11</string>
+    <string name="opcion4">De 12 a 17</string>
+    <string name="opcion5">De 18 a 23</string>
 </resources>
