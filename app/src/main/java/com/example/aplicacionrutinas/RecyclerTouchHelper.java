@@ -45,20 +45,26 @@ public class RecyclerTouchHelper extends ItemTouchHelper.SimpleCallback {
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         final int posicion = viewHolder.getAdapterPosition();
         if (direction == ItemTouchHelper.LEFT) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(rutinaAdaptador.getContext());
-            builder.setTitle("Eliminar Rutina");
-            builder.setMessage("¿Estás seguro de que quieres eliminar esta rutina?");
-            builder.setPositiveButton("Sí", (dialogInterface, i) -> {
-                List<Rutina> rutinas = rutinaAdaptador.getRutinas();
-                GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), Long.parseLong(rutinas.get(posicion).getHora()));
-                rutinaAdaptador.borrarRutina(posicion);
-            });
-            builder.setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> rutinaAdaptador.notifyItemChanged(posicion));
+            AlertDialog.Builder builder = getBuilder(posicion);
             AlertDialog dialog = builder.create();
+            dialog.setOnCancelListener(dialogInterface -> rutinaAdaptador.notifyItemChanged(posicion));
             dialog.show();
         } else {
             rutinaAdaptador.editarRutina(posicion);
         }
+    }
+
+    private AlertDialog.Builder getBuilder(int posicion) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(rutinaAdaptador.getContext());
+        builder.setTitle("Eliminar Rutina");
+        builder.setMessage("¿Estás seguro de que quieres eliminar esta rutina?");
+        builder.setPositiveButton("Sí", (dialogInterface, i) -> {
+            List<Rutina> rutinas = rutinaAdaptador.getRutinas();
+            GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), Long.parseLong(rutinas.get(posicion).getHora()));
+            rutinaAdaptador.borrarRutina(posicion);
+        });
+        builder.setNegativeButton(R.string.cancelOption, (dialogInterface, i) -> rutinaAdaptador.notifyItemChanged(posicion));
+        return builder;
     }
 
     /**
@@ -80,7 +86,6 @@ public class RecyclerTouchHelper extends ItemTouchHelper.SimpleCallback {
         Drawable icon;
         ColorDrawable fondo;
 
-        int offSet = 20;
         if (dX > 0) { // Deslizar hacia la derecha
             icon = ContextCompat.getDrawable(rutinaAdaptador.getContext(), R.drawable.baseline_edit_24); //Icono de papelera
             fondo = new ColorDrawable(ContextCompat.getColor(rutinaAdaptador.getContext(), R.color.colorPrimaryDark));

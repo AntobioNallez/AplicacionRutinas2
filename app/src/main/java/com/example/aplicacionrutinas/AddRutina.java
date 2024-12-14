@@ -95,29 +95,46 @@ public class AddRutina extends BottomSheetDialogFragment {
 
         botonNuevaRutina.setOnClickListener(view1 -> {
             String rutina = nuevaRutinaText.getText().toString();
-            String[] tiempo = horaEditText.getText().toString().split(":");
-            long hora = Long.parseLong(tiempo[0]) * 3600000 + Long.parseLong(tiempo[1]) * 60000;
+            String stringHora = horaEditText.getText().toString();
+            stringHora = stringHora.trim();
 
             if (rutina.isEmpty()) {
                 Toast.makeText(requireContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (isUpdate) {
+            if (stringHora.isEmpty()) {
+                stringHora = "12:00";
+                Toast.makeText(requireContext(), "Se ha introducido un valor por defecto, las 12AM debido a la falta de hora.", Toast.LENGTH_SHORT).show();
+            } else if (!stringHora.contains(":")) {
+                if (stringHora.length() == 3) { //Si no contiene los dos puntos y la longitud es 3 significa que se ha omitido el 0 del comienzo
+                    stringHora = "0" + stringHora;
+                    stringHora = stringHora.substring(0, 2) + ":" + stringHora.substring(2, 4);
+                } else {
+                    Toast.makeText(requireContext(), "Por favor introduce una hora válida.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                stringHora = stringHora.substring(0, 2) + ":" + stringHora.substring(2, 4);
+            }
+
+            String[] tiempo = stringHora.split(":");
+            long hora = Long.parseLong(tiempo[0]) * 3600000 + Long.parseLong(tiempo[1]) * 60000;
+
+            if (isUpdate) { //Comprueba si es la actualizacion de una rutina ya existente o si es nueva
                 int idRutina = bundle.getInt("id");
                 Rutina rutinaAntigua = db.obtenerRutina(idRutina);
                 GestorAlarma.cancelarAlarma(requireContext(), Long.parseLong(rutinaAntigua.getHora()));
                 db.actualizarRutina(idRutina, rutina, String.valueOf(hora), "Lunes");
             } else {
                 Rutina rutina1 = new Rutina();
-                rutina1.setStatus(0);
+                rutina1.setStatus(1);
                 rutina1.setRutina(rutina);
                 rutina1.setHora(String.valueOf(hora));
                 db.insertarRutina(rutina1);
             }
 
-            GestorAlarma.programarAlarmaDiaria(requireContext(), hora);
-            dismiss();
+            GestorAlarma.programarAlarmaDiaria(requireContext(), hora, rutina); //Programa una nueva alarma
+            dismiss(); //Cierre del dialogo
         });
     }
 

@@ -38,9 +38,10 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
 
     /**
      * Actualiza la base de datos y la version de esta
+     *
      * @param sqLiteDatabase Objeto que contiene la base de datos
-     * @param oldVersion Version antigua de la base de datos
-     * @param newVersion Nueva version de la base de datos
+     * @param oldVersion     Version antigua de la base de datos
+     * @param newVersion     Nueva version de la base de datos
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
@@ -71,25 +72,26 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
 
     /**
      * Devuelve una rutina dado un id
+     *
      * @param id Id de la rutina
      * @return Objeto rutina con los datos de esta
      */
     @SuppressLint("Range")
     public Rutina obtenerRutina(int id) {
-        Rutina rutina = null;
-        String query = "SELECT * FROM rutina WHERE id = ?";
-        try (Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)})) {
-            if (cursor != null && cursor.moveToFirst()) {
-                // Crear el objeto Rutina desde los datos obtenidos
-                rutina = new Rutina();
-                rutina.setId(cursor.getInt(cursor.getColumnIndex(RUTINA_ID)));
-                rutina.setRutina(cursor.getString(cursor.getColumnIndex(RUTINA_NOMBRE)));
-                rutina.setStatus(cursor.getInt(cursor.getColumnIndex(RUTINA_STATUS)));
-                rutina.setHora(cursor.getString(cursor.getColumnIndex(RUTINA_HORA)));
-                rutina.setDia(cursor.getString(cursor.getColumnIndex(RUTINA_DIA)));
-            }
-        }
-        return rutina;
+        List<Rutina> rutinas = obtenerRutinaConQuery("SELECT * FROM rutina WHERE id = ?", new String[]{String.valueOf(id)});
+        return rutinas.get(0);
+    }
+
+    /**
+     * Busca rutinas dado un texto "Ej. Busqueda='Co' -> Resultado=Compra, Cocinar, etc."
+     *
+     * @param texto Texto a buscar
+     * @return List que contiene las rutinas encontradas
+     */
+    @SuppressLint("Range")
+    public List<Rutina> buscarRutinas(String texto) {
+        String query = "SELECT * FROM rutina WHERE nombre LIKE ?";
+        return obtenerRutinaConQuery(query, new String[]{texto + "%"});
     }
 
     /**
@@ -99,25 +101,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      */
     @SuppressLint("Range")
     public List<Rutina> obtenerRutinas() {
-        List<Rutina> rutinas = new ArrayList<>();
-
-        try (Cursor cursor = db.query(RUTINAS_TABLE, null, null, null, null, null, null)) {
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        Rutina rutina = new Rutina();
-                        rutina.setId(cursor.getInt(cursor.getColumnIndex(RUTINA_ID)));
-                        rutina.setRutina(cursor.getString(cursor.getColumnIndex(RUTINA_NOMBRE)));
-                        rutina.setStatus(cursor.getInt(cursor.getColumnIndex(RUTINA_STATUS)));
-                        rutina.setHora(cursor.getString(cursor.getColumnIndex(RUTINA_HORA)));
-                        rutina.setDia(cursor.getString(cursor.getColumnIndex(RUTINA_DIA)));
-                        rutinas.add(rutina);
-                    } while (cursor.moveToNext());
-                }
-            }
-        }
-
-        return rutinas;
+        return obtenerRutinaConQuery("SELECT * FROM rutina", null);
     }
 
     /**
@@ -129,7 +113,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     public void actualizarStatus(int id, int status) {
         ContentValues values = new ContentValues();
         values.put(RUTINA_STATUS, status);
-        db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
+        actualizarRutinaPorId(id, values);
     }
 
     /**
@@ -145,15 +129,63 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
         values.put(RUTINA_NOMBRE, rutina);
         values.put(RUTINA_HORA, hora);
         values.put(RUTINA_DIA, dia);
-        db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
+        actualizarRutinaPorId(id, values);
     }
 
     /**
      * Elimina una rutina dado un id
+     *
      * @param id Id de la rutina a eliminar
      */
     public void eliminarRutina(int id) {
         db.delete(RUTINAS_TABLE, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
+    }
+
+    /**
+     * Ejecuta una query y devuelve una lista de rutinas
+     *
+     * @param query      Query a ejecutar
+     * @param argumentos Argumentos de la query
+     * @return List que contiene las rutinas encontradas
+     */
+    private List<Rutina> obtenerRutinaConQuery(String query, String[] argumentos) {
+        List<Rutina> rutinas = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(query, argumentos)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    rutinas.add(construirRutina(cursor));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return rutinas;
+    }
+
+    /**
+     * Construye un objeto rutina dado un cursor
+     *
+     * @param cursor Cursor que contiene los datos de la rutina
+     * @return Objeto rutina con los datos de esta
+     */
+    @SuppressLint("Range")
+    private Rutina construirRutina(Cursor cursor) {
+        Rutina rutina = new Rutina();
+        rutina.setId(cursor.getInt(cursor.getColumnIndex(RUTINA_ID)));
+        rutina.setRutina(cursor.getString(cursor.getColumnIndex(RUTINA_NOMBRE)));
+        rutina.setStatus(cursor.getInt(cursor.getColumnIndex(RUTINA_STATUS)));
+        rutina.setHora(cursor.getString(cursor.getColumnIndex(RUTINA_HORA)));
+        rutina.setDia(cursor.getString(cursor.getColumnIndex(RUTINA_DIA)));
+        return rutina;
+    }
+
+    /**
+     * Actualiza una rutina dado un id y un objeto content values
+     *
+     * @param id     Id de la rutina a modificar
+     * @param values Objeto content values con los datos a modificar
+     */
+    private void actualizarRutinaPorId(int id, ContentValues values) {
+        db.update(RUTINAS_TABLE, values, RUTINA_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
 }

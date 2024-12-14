@@ -4,6 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -12,10 +15,15 @@ public class GestorAlarma {
     /**
      * Programa una alarma que se repetirá diariamente a la hora especificada.
      *
-     * @param context Contexto de la aplicación
+     * @param context            Contexto de la aplicación
      * @param horaEnMilisegundos Hora en milisegundos desde el comienzo del día
      */
-    public static void programarAlarmaDiaria(Context context, long horaEnMilisegundos) {
+    public static void programarAlarmaDiaria(Context context, long horaEnMilisegundos, String mensaje) {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("titulo", "Recordatorio de tu rutina");
+        bundle.putString("mensaje", mensaje);
+
         // Obtener el calendario actual
         Calendar calendarioAlarma = Calendar.getInstance();
 
@@ -41,20 +49,28 @@ public class GestorAlarma {
         // Crear un ID único para la alarma
         int codUnico = generarIdUnico(horas, minutos);
 
+        bundle.putInt("cod", codUnico);
+
         // Configurar la alarma usando AlarmManager
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmaReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, codUnico, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        intent.putExtra("bundle", bundle);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, codUnico, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        // Programar la alarma para que se repita diariamente
-        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, tiempoAlarma, AlarmManager.INTERVAL_DAY, pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (manager != null && !manager.canScheduleExactAlarms()) {
+                Log.d("AlarmaReceiver ", "No se puede programar la alarma exacta");
+                manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, tiempoAlarma, AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+        }
+        manager.setExact(AlarmManager.RTC_WAKEUP, tiempoAlarma, pendingIntent);
     }
 
 
     /**
      * Cancela una alarma diaria.
      *
-     * @param context Contexto de la aplicación
+     * @param context            Contexto de la aplicación
      * @param horaEnMilisegundos Hora en milisegundos desde el comienzo del día
      */
     public static void cancelarAlarma(Context context, long horaEnMilisegundos) {
@@ -71,7 +87,8 @@ public class GestorAlarma {
 
     /**
      * Crear un hash único a partir de la hora
-     * @param horas Hora en formato de 24 horas
+     *
+     * @param horas   Hora en formato de 24 horas
      * @param minutos Minutos
      * @return Código único con el que se identificará la alarma
      */

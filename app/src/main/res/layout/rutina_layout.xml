@@ -19,9 +19,20 @@
             android:layout_alignParentStart="true"
             android:layout_marginEnd="8dp"
             android:buttonTint="@android:color/holo_green_dark"
-            android:text="Go to the market and bring vegetables immediately today." />
+            android:checked="true" />
+
+        <TextView
+            android:id="@+id/rutinaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="15dp"
+            android:layout_toStartOf="@id/thumbImageView"
+            android:text="00:00"
+            android:textStyle="bold" />
 
         <ImageView
+            android:id="@+id/thumbImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"

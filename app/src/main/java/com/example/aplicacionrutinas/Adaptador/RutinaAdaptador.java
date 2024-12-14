@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,13 +41,30 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
         final Rutina rutina = rutinas.get(position);
         holder.rutina.setText(rutina.getRutina());
         holder.rutina.setChecked(rutina.getStatus() == 1);
+        holder.hora.setText(calculoHora(rutina.getHora()));
         holder.rutina.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b){
+            if (b) {
                 db.actualizarStatus(rutina.getId(), 1);
             } else {
                 db.actualizarStatus(rutina.getId(), 0);
             }
         });
+    }
+
+    /**
+     * Metodo que calcula la hora de la rutina.
+     * @param hora Hora de la rutina
+     * @return Hora calculada
+     */
+    private String calculoHora(String hora) {
+        long minutos = Long.parseLong(hora) / 60000;
+        long horas = minutos / 60;
+        minutos = minutos % 60;
+        if (minutos == 0) {
+            return horas + ":" + minutos + "0"; //Si el minuto es 0 se añade un 0 al final para evitar que los minutos sean solo un digito
+        } else {
+            return horas + ":" + minutos;
+        }
     }
 
     public Activity getContext() {
@@ -55,6 +73,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     /**
      * Metodo que obtiene el numero de rutinas existentes
+     *
      * @return Numero total de rutinas
      */
     @Override
@@ -64,6 +83,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     /**
      * Metodo que se encarga de actualizar la lista de rutinas.
+     *
      * @param rutinaList Lista donde se almacenan las rutinas
      */
     public void setRutinas(List<Rutina> rutinaList) {
@@ -73,6 +93,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     /**
      * Metodo que se encarga de borrar una rutina dado una posicion en la lista.
+     *
      * @param posicion Posicion en la lista
      */
     public void borrarRutina(int posicion) {
@@ -84,6 +105,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     /**
      * Metodo que se encarga de editar una rutina dado una posicion en la lista.
+     *
      * @param posicion Posicion en la lista
      */
     public void editarRutina(int posicion) {
@@ -98,13 +120,19 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox rutina;
+        TextView hora;
 
         ViewHolder(View view) {
             super(view);
             rutina = view.findViewById(R.id.rutinaCheckBox);
+            hora = view.findViewById(R.id.rutinaTextView);
         }
     }
 
+    /**
+     * Metodo que obtiene la lista de rutinas.
+     * @return Lista de rutinas
+     */
     public List<Rutina> getRutinas() {
         return rutinas;
     }

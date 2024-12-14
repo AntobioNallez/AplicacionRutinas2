@@ -4,4 +4,8 @@
     <string name="guardar">Guardar</string>
     <string name="nueva_rutina">Nueva rutina</string>
     <string name="pistaHora">hh:mm</string>
+    <string name="tituloAppBar">Mis Rutinas</string>
+    <string name="busquedaBarra">Buscar</string>
+    <string name="filtrar">Filtrar por hora</string>
+    <string name="cancelOption">Cancelar</string>
 </resources>
