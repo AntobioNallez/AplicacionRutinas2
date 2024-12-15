@@ -107,8 +107,7 @@ public class AddRutina extends BottomSheetDialogFragment {
                 stringHora = "12:00";
                 Toast.makeText(requireContext(), "Se ha introducido un valor por defecto, las 12AM debido a la falta de hora.", Toast.LENGTH_SHORT).show();
             } else if (!stringHora.contains(":")) {
-                if (stringHora.length() == 3) { //Si no contiene los dos puntos y la longitud es 3 significa que se ha omitido el 0 del comienzo
-                    stringHora = "0" + stringHora;
+                if (stringHora.length() == 4) { //En el caso de haber omitido los : pero haber introducido la hora correctamente
                     stringHora = stringHora.substring(0, 2) + ":" + stringHora.substring(2, 4);
                 } else {
                     Toast.makeText(requireContext(), "Por favor introduce una hora válida.", Toast.LENGTH_SHORT).show();
@@ -118,6 +117,16 @@ public class AddRutina extends BottomSheetDialogFragment {
 
             String[] tiempo = stringHora.split(":");
             long hora = Long.parseLong(tiempo[0]) * 3600000 + Long.parseLong(tiempo[1]) * 60000;
+            long minutos = Long.parseLong(tiempo[1]);
+
+            if (minutos < 0 || minutos > 59) {
+                Toast.makeText(requireContext(), "Por favor introduce una hora válida. (Minutos deben estar entre 00 y 59)", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (hora > 86340000) {
+                Toast.makeText(requireContext(), "Por favor introduce una hora válida. (Entre 00:00 y 23:59)", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (isUpdate) { //Comprueba si es la actualizacion de una rutina ya existente o si es nueva
                 int idRutina = bundle.getInt("id");

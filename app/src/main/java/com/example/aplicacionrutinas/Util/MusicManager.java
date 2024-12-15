@@ -24,7 +24,10 @@ public class MusicManager {
         mediaPlayer = MediaPlayer.create(context, R.raw.borrar_rutina);
         mediaPlayer.start();
 
-        mediaPlayer.setOnCompletionListener(mp -> MusicManager.empezarMusica(context, R.raw.musica_fondo));
+        mediaPlayer.setOnCompletionListener(mp -> {
+            detenerMusica();
+            MusicManager.empezarMusica(context, R.raw.musica_fondo);
+        });
     }
 
     public static void reaunudarMusica() {
