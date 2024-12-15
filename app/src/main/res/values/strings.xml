@@ -13,4 +13,7 @@
     <string name="opcion3">De 6 a 11</string>
     <string name="opcion4">De 12 a 17</string>
     <string name="opcion5">De 18 a 23</string>
+    <string name="ordenarPor">Ordenar Por</string>
+    <string name="ordenarHoraASC">Ordenar por hora</string>
+    <string name="ordenarRutinaASC">Ordenar por rutina</string>
 </resources>

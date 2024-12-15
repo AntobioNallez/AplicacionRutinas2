@@ -3,15 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/busquedaBarra"
-        android:icon="@drawable/busqueda"
         android:id="@+id/buscar"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        android:icon="@drawable/busqueda"
+        android:title="@string/busquedaBarra"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
 
     <item
         android:id="@+id/filtrar"
         android:icon="@drawable/filtrar"
         android:title="@string/filtrar"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/ordenarPor"
+        android:icon="@drawable/sort_by"
+        android:title="@string/ordenarPor"
         app:showAsAction="ifRoom" />
 </menu>

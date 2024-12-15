@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.aplicacionrutinas.Adaptador.RutinaAdaptador;
 import com.example.aplicacionrutinas.Modelo.Rutina;
 import com.example.aplicacionrutinas.Notificaciones.GestorAlarma;
+import com.example.aplicacionrutinas.Util.MusicManager;
 
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class RecyclerTouchHelper extends ItemTouchHelper.SimpleCallback {
             List<Rutina> rutinas = rutinaAdaptador.getRutinas();
             GestorAlarma.cancelarAlarma(rutinaAdaptador.getContext(), rutinas.get(posicion).getHora());
             rutinaAdaptador.borrarRutina(posicion);
+            MusicManager.reproducirBorrarRutina(rutinaAdaptador.getContext());
         });
         builder.setNegativeButton(R.string.cancelOption, (dialogInterface, i) -> rutinaAdaptador.notifyItemChanged(posicion));
         return builder;

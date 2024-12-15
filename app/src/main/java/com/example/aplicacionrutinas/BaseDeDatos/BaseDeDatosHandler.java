@@ -85,7 +85,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      */
     @SuppressLint("Range")
     public Rutina obtenerRutina(int id) {
-        List<Rutina> rutinas = obtenerRutinaConQuery("SELECT * FROM rutina WHERE id = ?", new String[]{String.valueOf(id)});
+        List<Rutina> rutinas = obtenerRutinaConQuery("SELECT * FROM rutina WHERE id = ?", new String[]{String.valueOf(id)}, "hora");
         return rutinas.get(0);
     }
 
@@ -96,12 +96,12 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      * @return List que contiene las rutinas encontradas
      */
     @SuppressLint("Range")
-    public List<Rutina> buscarRutinas(String texto, int rangoHora) {
+    public List<Rutina> buscarRutinas(String texto, int rangoHora, String orden) {
         String query = "SELECT * FROM rutina WHERE nombre LIKE ? AND hora >= ? AND hora <= ?";
         long inicio = rangosHoras[rangoHora][0];
         long fin = rangosHoras[rangoHora][1];
 
-        return obtenerRutinaConQuery(query, new String[]{texto + "%", String.valueOf(inicio), String.valueOf(fin)});
+        return obtenerRutinaConQuery(query, new String[]{texto + "%", String.valueOf(inicio), String.valueOf(fin)}, orden);
     }
 
     /**
@@ -110,8 +110,8 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      * @return List que contiene todas las rutinas
      */
     @SuppressLint("Range")
-    public List<Rutina> obtenerRutinas() {
-        return obtenerRutinaConQuery("SELECT * FROM rutina", null);
+    public List<Rutina> obtenerRutinas(String orden) {
+        return obtenerRutinaConQuery("SELECT * FROM rutina", null, orden);
     }
 
     /**
@@ -137,7 +137,7 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
     public void actualizarRutina(int id, String rutina, String hora, String dia) {
         ContentValues values = new ContentValues();
         values.put(RUTINA_NOMBRE, rutina);
-        values.put(RUTINA_HORA, Rutina.convertirHoraAMilisegundos(hora)); // Convertir hora
+        values.put(RUTINA_HORA, hora);
         values.put(RUTINA_DIA, dia);
         actualizarRutinaPorId(id, values);
     }
@@ -158,9 +158,9 @@ public class BaseDeDatosHandler extends SQLiteOpenHelper {
      * @param argumentos Argumentos de la query
      * @return List que contiene las rutinas encontradas
      */
-    private List<Rutina> obtenerRutinaConQuery(String query, String[] argumentos) {
+    private List<Rutina> obtenerRutinaConQuery(String query, String[] argumentos, String orden) {
         List<Rutina> rutinas = new ArrayList<>();
-        query += " ORDER BY hora ASC"; //Ordenar por hora ascendente
+        query += " ORDER BY " + orden + " ASC"; //Orden por parametro que se le pase
         try (Cursor cursor = db.rawQuery(query, argumentos)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {

@@ -15,6 +15,7 @@ import com.example.aplicacionrutinas.AddRutina;
 import com.example.aplicacionrutinas.BaseDeDatos.BaseDeDatosHandler;
 import com.example.aplicacionrutinas.MainActivity;
 import com.example.aplicacionrutinas.Modelo.Rutina;
+import com.example.aplicacionrutinas.Notificaciones.GestorAlarma;
 import com.example.aplicacionrutinas.R;
 
 import java.util.List;
@@ -45,14 +46,17 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
         holder.rutina.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
                 db.actualizarStatus(rutina.getId(), 1);
+                GestorAlarma.programarAlarmaDiaria(getContext(), rutina.getHora(), rutina.getRutina());
             } else {
                 db.actualizarStatus(rutina.getId(), 0);
+                GestorAlarma.cancelarAlarma(getContext(), rutina.getHora());
             }
         });
     }
 
     /**
      * Metodo que calcula la hora de la rutina.
+     *
      * @param hora Hora de la rutina
      * @return Hora calculada
      */
@@ -131,6 +135,7 @@ public class RutinaAdaptador extends RecyclerView.Adapter<RutinaAdaptador.ViewHo
 
     /**
      * Metodo que obtiene la lista de rutinas.
+     *
      * @return Lista de rutinas
      */
     public List<Rutina> getRutinas() {

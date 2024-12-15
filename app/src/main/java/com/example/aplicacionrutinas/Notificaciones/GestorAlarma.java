@@ -64,6 +64,7 @@ public class GestorAlarma {
             }
         }
         manager.setExact(AlarmManager.RTC_WAKEUP, tiempoAlarma, pendingIntent);
+        Log.d("AlarmManager", "Alarma programada con éxito para la hora: " + (horaEnMilisegundos / (3600 * 1000)) + ":" + ((horaEnMilisegundos / (60 * 1000)) % 60));
     }
 
 
@@ -83,6 +84,7 @@ public class GestorAlarma {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         manager.cancel(pendingIntent);
+        Log.d("GestorAlarma", "Alarma cancelada con éxito para la hora: " + (horaEnMilisegundos / (3600 * 1000)) + ":" + ((horaEnMilisegundos / (60 * 1000)) % 60));
     }
 
     /**
